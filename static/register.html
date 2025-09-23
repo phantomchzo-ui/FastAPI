@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Register</title>
+</head>
+<body>
+  <h1>User Registration</h1>
+  <form id="register-form">
+    <input type="email" id="email" placeholder="Email" required><br><br>
+    <input type="text" id="name" placeholder="Name" required><br><br>
+    <input type="password" id="password" placeholder="Password" required><br><br>
+    <button type="submit">Register</button>
+  </form>
+
+  <p id="status"></p>
+
+  <script>
+    const API_URL = "http://127.0.0.1:8000/users/register";
+
+    document.getElementById("register-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            email: email,
+            name: name,
+            hashed_password: password
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error("Ошибка регистрации: " + response.status);
+        }
+
+        const result = await response.json();
+        document.getElementById("status").textContent = "✅ " + JSON.stringify(result);
+      } catch (err) {
+        document.getElementById("status").textContent = "❌ " + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
