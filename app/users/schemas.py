@@ -14,11 +14,9 @@ class SUserSchemas(BaseModel):
         return validation_password(v)
 
 
-
 class SUserLoginSchemas(BaseModel):
     email: EmailStr
     password: str
-
 
 
 class SUserSchemasUpdate(BaseModel):

@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Response, Depends
 
 from app.exceptions import UserAlreadyExitsException, UserDoesNotExitsException
+from app.logger import logger
 from app.users.auth import get_password_hash, auth_user, create_access_token, auth_user_without_pass, verify_password
 from app.users.dao import UserDAO
 from app.users.dependencies import get_current_user, require_role
@@ -8,13 +9,20 @@ from app.users.models import User
 from app.users.schemas import SUserSchemas, SUserLoginSchemas, SUserSchemasUpdate, SUserSchemasUpdatePass
 
 router = APIRouter(prefix='/users',
+    tags=['Users'], dependencies=[Depends(require_role("admin"))])
+
+public_router = APIRouter(prefix='/users',
     tags=['Users'])
 
 @router.get('')
-async def get_users(user: User = Depends(require_role("admin"))):
+async def get_users():
     return await UserDAO.find_all()
 
-@router.post('/register')
+@router.get('/{user_id}')
+async def get_user_by_id(user_id:int):
+    return await UserDAO.find_by_id(user_id)
+
+@public_router.post('/register')
 async def register(user_data: SUserSchemas):
     existing_user = await UserDAO.find_one_ore_none(email=user_data.email)
 
@@ -23,9 +31,15 @@ async def register(user_data: SUserSchemas):
 
     hashed_password = get_password_hash(user_data.hashed_password)
     await UserDAO.add(email=user_data.email,name=user_data.name, hashed_password=hashed_password)
-    return {f'{user_data.name} Вы успешно зарегались ваш эмайл! {user_data.email}'}
 
-@router.post('/login')
+    logger.info(f"Новый пользователь зарегистрирован: {user_data.email}")
+
+    return {
+        "message": f"{user_data.name}, вы успешно зарегистрировались!",
+        "email": user_data.email
+    }
+
+@public_router.post('/login')
 async def login(user_data: SUserLoginSchemas, response: Response):
     user = await auth_user(user_data.email, user_data.password)
     if not user:
@@ -45,13 +59,12 @@ async def logout_user(response: Response):
 
 
 @router.delete('/delete/{user_id}')
-async def delete_user(user_id: int, user: User = Depends(require_role("admin"))):
+async def delete_user(user_id: int):
     return await UserDAO.remove(user_id)
 
 
 @router.put('/update/{user_id}')
-async def update_user(user_id: int, user_data: SUserSchemasUpdate,
-                      user: User = Depends(require_role("admin"))):
+async def update_user(user_id: int, user_data: SUserSchemasUpdate):
     await UserDAO.update(user_id, user_data.dict())
     return {"Status": True}
 

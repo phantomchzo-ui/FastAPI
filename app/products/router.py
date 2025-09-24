@@ -10,10 +10,12 @@ from fastapi_cache.decorator import cache
 router = APIRouter(prefix='/products',
                    tags=['Products'])
 
-@router.get('')
-@cache(expire=960)
+@router.get('/')
+@cache(expire=900)
 async def get_products():
     return await ProductDAO.find_all()
+
+
 
 @router.get('/by_{catalog_id}')
 async def get_products_by_catalog_id(catalog_id:int):
