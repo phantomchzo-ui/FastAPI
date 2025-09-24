@@ -1,3 +1,5 @@
+import re
+
 from pydantic import EmailStr
 from sqlalchemy import select, insert, delete, update
 
@@ -56,3 +58,16 @@ class BaseDAO:
                      returning(cls.model))
             await session.execute(query)
             await session.commit()
+
+
+def validation_password(password:str) -> str:
+        if len(password) < 6:
+            raise ValueError('Пароль должен содержать минимум 6 символов')
+        if not re.search(r"[A-Z]", password):
+            raise ValueError('Пароль должен содержать хотя бы одну заглавную букву')
+        if not re.search(r"[a-z]", password):
+            raise ValueError("Пароль должен содержать хотя бы одну строчную букву")
+        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
+            raise ValueError("Пароль должен содержать хотя бы один спецсимвол")
+        return password
+
