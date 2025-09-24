@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from fastapi import Depends, HTTPException, Request
 from jose import JWTError, jwt
@@ -22,7 +22,7 @@ async def get_current_user(token: str = Depends(get_token)):
         raise InvalidTokenException
 
     expire = payload.get("exp")
-    if not expire or (int(expire) < datetime.utcnow().timestamp()):
+    if not expire or (int(expire) < datetime.now(timezone.utc).timestamp()):
         raise TokenExpiredException
     user_id = payload.get("sub")
     if not user_id:

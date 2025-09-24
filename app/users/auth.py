@@ -20,13 +20,15 @@ def verify_password(plain_password, hashed_password):
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.now(timezone.utc) + expires_delta
-    else:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=30)
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=30))
+    to_encode.update({"exp": int(expire.timestamp())})
+    encoded_jwt = jwt.encode(
+        to_encode,
+        settings.SECRET_KEY,
+        algorithm=settings.ALGORITHM
+    )
     return encoded_jwt
+
 
 async def auth_user(email: EmailStr, password: str):
     user = await UserDAO.find_one_ore_none(email=email)
@@ -39,5 +41,4 @@ async def auth_user_without_pass(email: EmailStr):
     if not user:
         raise UserDoesNotExitsException
     return user
-
 
