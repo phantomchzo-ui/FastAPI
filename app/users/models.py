@@ -1,7 +1,9 @@
-from pydantic import EmailStr
-from sqlalchemy import String
-from sqlalchemy.orm import Mapped, mapped_column
+from datetime import datetime
 
+from pydantic import EmailStr
+from sqlalchemy import String, func
+from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import DateTime
 from app.database import Base, engine
 
 
@@ -12,5 +14,10 @@ class User(Base):
     name: Mapped[str] = mapped_column(String(25))
     email: Mapped[EmailStr] = mapped_column(String(50))
     hashed_password: Mapped[str]
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
     role: Mapped[str] = mapped_column(String(25), default='user')
+
 
