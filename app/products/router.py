@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 
 from app.pagination import PaginationParams
 from app.products.dao import ProductDAO
+from app.products.payment import purchase_product
 from app.products.schemas import SProductSchemas
-from app.users.dependencies import require_role
+from app.users.dependencies import require_role, get_current_user
 from app.users.models import User
 from fastapi_cache.decorator import cache
 
@@ -46,5 +47,11 @@ async def put_products(product_id:int, product_data: SProductSchemas,
     return {"status": "updated"}
 
 @router.post('/{product_id}/buy')
-async def buy_product():
-    ...
+async def buy_product(product_id:int, user: User = Depends(get_current_user)):
+    res = await purchase_product(user.id, product_id)
+
+    if not res["success"]:
+        raise HTTPException(status_code=400, detail=res["message"])
+
+    return res
+
