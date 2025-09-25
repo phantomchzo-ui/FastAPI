@@ -44,3 +44,7 @@ async def put_products(product_id:int, product_data: SProductSchemas,
                        user: User = Depends(require_role("admin", "manager"))):
     await ProductDAO.update(product_id, product_data.dict())
     return {"status": "updated"}
+
+@router.post('/{product_id}/buy')
+async def buy_product():
+    ...

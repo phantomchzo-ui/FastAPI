@@ -12,4 +12,5 @@ class Product(Base):
     price: Mapped[int]
     description: Mapped[str] = mapped_column(String(255))
     catalog_id: Mapped[int] = mapped_column(ForeignKey('catalog.id'))
+    count: Mapped[int] = mapped_column(default=10, nullable=True)
     product_images: Mapped[str] = mapped_column(String(50))
