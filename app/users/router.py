@@ -4,14 +4,14 @@ from app.exceptions import UserAlreadyExitsException, UserDoesNotExitsException
 from app.logger import logger
 from app.users.auth import get_password_hash, auth_user, create_access_token, auth_user_without_pass, verify_password
 from app.users.dao import UserDAO
-from app.users.dependencies import get_current_user, require_role
+from app.users.dependencies import get_current_user, require_role, get_token
 from app.users.models import User
 from app.users.schemas import SUserSchemas, SUserLoginSchemas, SUserSchemasUpdate, SUserSchemasUpdatePass
 
 router = APIRouter(prefix='/users',
     tags=['Users'], dependencies=[Depends(require_role("admin"))])
 
-public_router = APIRouter(prefix='/users',
+public_router = APIRouter(prefix='/user',
     tags=['Users'])
 
 @router.get('')
@@ -49,7 +49,7 @@ async def login(user_data: SUserLoginSchemas, response: Response):
     response.set_cookie("shop_access_token", access_token, httponly=True)
     return access_token
 
-@router.get('/current_user')
+@public_router.get('/current_user')
 async def current_user(user: User = Depends(get_current_user)):
     return user
 
@@ -76,9 +76,6 @@ async def user_forget_pass(user_data: SUserSchemasUpdatePass):
     await UserDAO.patch(user_data.email, new_password)
     return {"Status" : True}
 
-@router.get('/verify_pass')
-async def ver_pass():
-    return verify_password('string12', '$2b$12$9YQrbbHwsR6GMXABKOUuoOFtiGMo8f7QEe2p7ROvRwd0BHrYbmQp.')
 
 
 

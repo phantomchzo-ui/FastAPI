@@ -1,8 +1,6 @@
 from fastapi import APIRouter, Depends
-
 from app.catalog.dao import CatalogDAO
 from app.catalog.schemas import SCatalogSchemas
-from app.pagination import PaginationParams
 from app.users.dependencies import require_role
 from app.users.models import User
 
@@ -13,6 +11,10 @@ router = APIRouter(prefix='/catalog',
 async def get_catalog():
     return await CatalogDAO.find_all(limit=10, offset=3)
 
+
+@router.get('/test')
+async def test():
+    return 'Hello world'
 
 
 @router.post('/add_catalog')
