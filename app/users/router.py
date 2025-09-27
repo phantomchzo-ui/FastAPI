@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Response, Depends
+from fastapi import APIRouter, Response, Depends, HTTPException
 
 from app.exceptions import UserAlreadyExitsException, UserDoesNotExitsException
 from app.logger import logger
@@ -17,7 +17,10 @@ public_router = APIRouter(prefix='/user',
 
 @router.get('')
 async def get_users():
-    return await UserDAO.find_all()
+    try:
+        return await UserDAO.find_all()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 
 @router.get('/{user_id}')
 async def get_user_by_id(user_id:int):
