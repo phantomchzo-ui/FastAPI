@@ -12,11 +12,6 @@ async def get_catalog():
     return await CatalogDAO.find_all(limit=10, offset=3)
 
 
-@router.get('/test')
-async def test():
-    return 'Hello world'
-
-
 @router.post('/add_catalog')
 async def add_catalog(catalog_data: SCatalogSchemas, user: User = Depends(require_role("admin", "manager"))):
     await CatalogDAO.add(name=catalog_data.name, catalog_images=catalog_data.catalog_images)
