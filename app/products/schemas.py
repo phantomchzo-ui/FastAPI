@@ -7,3 +7,8 @@ class SProductSchemas(BaseModel):
     description:str
     catalog_id:int
     product_images:str
+
+class ProductSchemasEmail(BaseModel):
+    name:str
+    price:int
+    description:str

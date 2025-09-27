@@ -23,6 +23,7 @@ class SUserSchemasUpdate(BaseModel):
     email: EmailStr
     name: str
     role: str
+    balance: int
 
 class SUserSchemasUpdatePass(BaseModel):
     email: EmailStr

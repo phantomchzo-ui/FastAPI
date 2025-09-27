@@ -1,15 +1,17 @@
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.pagination import PaginationParams
 from app.products.dao import ProductDAO
 from app.products.payment import purchase_product
-from app.products.schemas import SProductSchemas
+from app.products.schemas import SProductSchemas, ProductSchemasEmail
+from app.tasks.tasks import send_message_access_order
 from app.users.dependencies import require_role, get_current_user
 from app.users.models import User
 from fastapi_cache.decorator import cache
 
 router = APIRouter(prefix='/products',
                    tags=['Products'])
+
+
 
 @router.get('/')
 @cache(expire=900)
@@ -47,11 +49,24 @@ async def put_products(product_id:int, product_data: SProductSchemas,
     return {"status": "updated"}
 
 @router.post('/{product_id}/buy')
-async def buy_product(product_id:int, user: User = Depends(get_current_user)):
+async def buy_product(product_id:int,
+                      user: User = Depends(get_current_user)):
     res = await purchase_product(user.id, product_id)
+
+    product = await ProductDAO.find_by_id(product_id)
 
     if not res["success"]:
         raise HTTPException(status_code=400, detail=res["message"])
+
+    email = 'Phantomchzo@gmail.com'
+
+    product_data = ProductSchemasEmail(
+        name=product.name,
+        price=product.price,
+        description=product.description
+    )
+
+    send_message_access_order.delay(email, product_data.model_dump())
 
     return res
 
