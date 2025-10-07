@@ -32,3 +32,20 @@ def access_order(email_to: str, product_data: dict):
     )
 
     return email
+
+def notification(email_to:str):
+    email = EmailMessage()
+    email["Subject"] = "Your order"
+    email["From"] = settings.GM_USER
+    email["To"] = email_to
+
+    email.set_content(
+        f"""
+                   <h1>Sale 90% for phones, laptops 🎉</h1>
+                   <p>Welcome back</p>
+
+                   """,
+        subtype="html"
+    )
+
+    return email
