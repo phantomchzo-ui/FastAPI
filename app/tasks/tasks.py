@@ -2,7 +2,7 @@ import smtplib
 
 from app.config import settings
 from app.tasks.celery_app import celery
-from app.tasks.email_templates import create_confirmation, access_order
+from app.tasks.email_templates import create_confirmation, access_order, notification
 
 
 @celery.task
@@ -16,6 +16,14 @@ def send_message(email_to:str):
 @celery.task
 def send_message_access_order(email_to:str, product_data:dict):
     content = access_order(email_to, product_data)
+
+    with smtplib.SMTP_SSL(settings.GM_HOST, settings.GM_PORT) as server:
+        server.login(settings.GM_USER, settings.GM_PASSWORD)
+        server.send_message(content)
+
+@celery.task
+def send_notification(email_to:str):
+    content = notification(email_to)
 
     with smtplib.SMTP_SSL(settings.GM_HOST, settings.GM_PORT) as server:
         server.login(settings.GM_USER, settings.GM_PASSWORD)
