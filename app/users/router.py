@@ -3,9 +3,9 @@ from fastapi import APIRouter, Response, Depends, HTTPException
 from app.exceptions import UserAlreadyExitsException, UserDoesNotExitsException
 from app.logger import logger
 from app.tasks.tasks import send_message
-from app.users.auth import get_password_hash, auth_user, create_access_token, auth_user_without_pass, verify_password
+from app.users.auth import get_password_hash, auth_user, create_access_token, auth_user_without_pass
 from app.users.dao import UserDAO
-from app.users.dependencies import get_current_user, require_role, get_token
+from app.users.dependencies import get_current_user, require_role
 from app.users.models import User
 from app.users.schemas import SUserSchemas, SUserLoginSchemas, SUserSchemasUpdate, SUserSchemasUpdatePass
 

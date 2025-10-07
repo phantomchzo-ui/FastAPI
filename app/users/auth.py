@@ -1,5 +1,4 @@
 from datetime import timedelta, datetime, timezone
-from fastapi import Request
 from jose import jwt
 from passlib.context import CryptContext
 from pydantic import EmailStr
