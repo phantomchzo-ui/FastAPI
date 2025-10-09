@@ -26,3 +26,5 @@ async def test_login(email, password, status_code, ac: AsyncClient):
     })
 
     assert response.status_code == status_code
+
+
