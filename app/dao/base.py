@@ -24,9 +24,9 @@ class BaseDAO:
             return res.scalar_one_or_none()
 
     @classmethod
-    async def find_all(cls, limit: int = 10, offset: int = 0):
+    async def find_all(cls):
         async with async_session() as session:
-            query = select(cls.model).limit(limit).offset(offset)
+            query = select(cls.model)
             res = await session.execute(query)
             return res.scalars().all()
 

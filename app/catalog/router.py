@@ -9,7 +9,7 @@ router = APIRouter(prefix='/catalog',
 
 @router.get('')
 async def get_catalog():
-    return await CatalogDAO.find_all(limit=10, offset=3)
+    return await CatalogDAO.find_all()
 
 
 @router.post('/add_catalog')
