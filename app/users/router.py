@@ -9,22 +9,17 @@ from app.users.dependencies import get_current_user, require_role
 from app.users.models import User
 from app.users.schemas import SUserSchemas, SUserLoginSchemas, SUserSchemasUpdate, SUserSchemasUpdatePass
 
-router = APIRouter(prefix='/users',
-    tags=['Users'], dependencies=[Depends(require_role("admin"))])
+public_router = APIRouter(
+    prefix='/auth',
+    tags=['Auth – User']
+)
 
-public_router = APIRouter(prefix='/user',
-    tags=['Users'])
+router = APIRouter(
+    prefix='/users',
+    tags=['Users – Admin'],
+    dependencies=[Depends(require_role("admin"))]
+)
 
-@router.get('')
-async def get_users():
-    try:
-        return await UserDAO.find_all()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
-
-@router.get('/{user_id}')
-async def get_user_by_id(user_id:int):
-    return await UserDAO.find_by_id(user_id)
 
 @public_router.post('/register')
 async def register(user_data: SUserSchemas):
@@ -64,9 +59,23 @@ async def login(user_data: SUserLoginSchemas, response: Response):
 async def current_user(user: User = Depends(get_current_user)):
     return user
 
-@router.post('/logout')
+@public_router.post('/logout')
 async def logout_user(response: Response):
     response.delete_cookie('shop_access_token')
+
+
+
+@router.get('')
+async def get_users():
+    try:
+        return await UserDAO.find_all()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+@router.get('/{user_id}')
+async def get_user_by_id(user_id:int):
+    return await UserDAO.find_by_id(user_id)
+
 
 
 @router.delete('/delete/{user_id}')

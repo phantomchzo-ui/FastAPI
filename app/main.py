@@ -36,8 +36,8 @@ admin.add_view(UserAdmin)
 admin.add_view(ProductAdmin)
 admin.add_view(CatalogAdmin)
 
-app.include_router(router)
 app.include_router(public_router)
+app.include_router(router)
 app.include_router(catalog_router)
 app.include_router(product_router)
 
