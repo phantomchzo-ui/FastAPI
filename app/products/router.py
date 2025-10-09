@@ -12,11 +12,10 @@ router = APIRouter(prefix='/products',
                    tags=['Products'])
 
 
-
-@router.get('/')
-@cache(expire=900)
+@router.get('/products')
+@cache(expire=60*30)
 async def get_products():
-    return await ProductDAO.find_all()
+    return await ProductDAO.product_find_all(20, 5)
 
 
 

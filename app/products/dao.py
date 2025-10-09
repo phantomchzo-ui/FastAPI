@@ -15,3 +15,11 @@ class ProductDAO(BaseDAO):
             query = select(cls.model).where(cls.model.catalog_id == catalog_id)
             res = await session.execute(query)
             return res.scalars().all()
+
+    @classmethod
+    async def product_find_all(cls, limit: int = 10, offset: int = 0):
+        async with async_session() as session:
+            query = select(cls.model).limit(limit).offset(offset)
+            res = await session.execute(query)
+            return res.scalars().all()
+
