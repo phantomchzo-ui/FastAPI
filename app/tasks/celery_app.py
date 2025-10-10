@@ -1,7 +1,12 @@
+import os
 from celery import Celery
+
+broker_url = os.getenv("CELERY_BROKER_URL", "redis://redis:6379/0")
+backend_url = os.getenv("CELERY_RESULT_BACKEND", "redis://redis:6379/0")
 
 celery = Celery(
     "tasks",
-    broker="redis://localhost",
+    broker=broker_url,
+    backend=backend_url,
     include=["app.tasks.tasks"]
 )
