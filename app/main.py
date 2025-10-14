@@ -1,13 +1,9 @@
-import time
-
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from sqladmin import Admin
-from fastapi.middleware.cors import CORSMiddleware
-from starlette.staticfiles import StaticFiles
-
 from app.admin.admin import UserAdmin, ProductAdmin, CatalogAdmin
 from app.admin.auth import authentication_backend
 from app.database import engine
+from app.middleware.logging_middlware import LoggingMiddleware
 from app.users.router import router
 from app.users.router import public_router as public_router
 from app.catalog.router import router as catalog_router
@@ -19,7 +15,6 @@ from contextlib import asynccontextmanager
 
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
-from app.logger import logger
 
 from redis import asyncio as aioredis
 
@@ -30,6 +25,8 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     yield
 
 app = FastAPI(lifespan=lifespan)
+
+app.add_middleware(LoggingMiddleware)
 
 admin = Admin(app, engine, authentication_backend=authentication_backend)
 admin.add_view(UserAdmin)
@@ -42,6 +39,8 @@ app.include_router(catalog_router)
 app.include_router(product_router)
 
 
+
+'''''
 @app.middleware("http")
 async def add_process_time_header(request: Request, call_next):
     start_time = time.perf_counter()
@@ -59,5 +58,7 @@ async def add_process_time_header(request: Request, call_next):
 
     response.headers["X-Process-Time"] = str(round(process_time, 4))
     return response
+'''''
+
 
 
