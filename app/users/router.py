@@ -63,6 +63,8 @@ async def current_user(user: User = Depends(get_current_user)):
 async def logout_user(response: Response):
     response.delete_cookie('shop_access_token')
 
+    return {"message": "Logged out successfully"}
+
 
 
 @router.get('')
