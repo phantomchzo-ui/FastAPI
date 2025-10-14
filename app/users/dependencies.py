@@ -38,7 +38,7 @@ def require_role(*roles: str):
         if user.role not in roles:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Недостаточно прав"
+                detail="Insufficient rights"
             )
         return user
     return wrapper
