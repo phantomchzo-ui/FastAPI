@@ -13,11 +13,14 @@ class CustomJsonFormatter(jsonlogger.JsonFormatter):
             log_record["timestamp"] = datetime.now(timezone.utc).isoformat()
 
         log_record["level"] = record.levelname.upper()
+        log_record["logger_name"] = record.name
 
 
-logger = logging.getLogger()
+logger = logging.getLogger("app_logger")
+logger.propagate = False
 logHandler = logging.StreamHandler()
 logHandler.setFormatter(CustomJsonFormatter())
+
 logger.addHandler(logHandler)
 logger.setLevel(settings.LOG_LEVEL)
 
