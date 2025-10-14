@@ -52,11 +52,11 @@ async def buy_product(product_id:int,
                       user: User = Depends(get_current_user)):
     res = await purchase_product(user.id, product_id)
 
-    product = await ProductDAO.find_by_id(product_id)
+    #product = await ProductDAO.find_by_id(product_id)
 
     if not res["success"]:
         raise HTTPException(status_code=400, detail=res["message"])
-
+    '''''
     email = 'Phantomchzo@gmail.com'
 
     product_data = ProductSchemasEmail(
@@ -66,6 +66,6 @@ async def buy_product(product_id:int,
     )
 
     send_message_access_order.delay(email, product_data.model_dump())
-
+    '''''
     return res
 
